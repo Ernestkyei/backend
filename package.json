@@ -2,10 +2,12 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
+    "db:migrate": "node database/migrate.js",
     "test": "vitest"
   },
   "repository": {

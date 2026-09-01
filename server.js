@@ -1,7 +1,8 @@
-const app = require("./app");
-const pool = require("./database/database");
+import app from "./app.js";
+import pool from "./database/database.js";
+import "dotenv/config";
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   try {
