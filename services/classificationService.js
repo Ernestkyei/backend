@@ -1,9 +1,14 @@
+import { classifyWithGemini } from "../adapters/llm/llmAdapter.js";
+
+const CONFIDENCE_THRESHOLD = 0.85;
+
 export const classifyEmail = async ({
   subject,
   body
 }) => {
   const text = `${subject} ${body}`.toLowerCase();
 
+  // Restricted requests always require human review
   if (
     text.includes("refund") ||
     text.includes("password") ||
@@ -18,24 +23,21 @@ export const classifyEmail = async ({
     };
   }
 
-  if (
-    text.includes("service") ||
-    text.includes("services") ||
-    text.includes("how does") ||
-    text.includes("get started")
-  ) {
+  // Ask Gemini to classify the email
+  const result = await classifyWithGemini({
+    subject,
+    body
+  });
+
+  // Low-confidence classifications require human review
+  if (result.confidence < CONFIDENCE_THRESHOLD) {
     return {
-      classification: "IN_REMIT",
-      confidence: 0.95,
-      intent: "general_information",
-      reason: "The email is asking about the organization's services."
+      ...result,
+      classification: "NEEDS_REVIEW",
+      reason: "The AI classification confidence is below the required threshold."
     };
   }
 
-  return {
-    classification: "NEEDS_REVIEW",
-    confidence: 0.5,
-    intent: "unclear",
-    reason: "The email could not be confidently classified."
-  };
+  // High-confidence result from Gemini
+  return result;
 };

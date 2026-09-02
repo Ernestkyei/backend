@@ -11,6 +11,13 @@ describe("Gemini Email Classification", () => {
     console.log("Gemini classification:", result);
 
     expect(result).toBeTruthy();
-    expect(typeof result).toBe("string");
+    expect(typeof result).toBe("object");
+
+    expect(result.classification).toBeTruthy();
+    expect(result.confidence).toBeGreaterThanOrEqual(0);
+    expect(result.confidence).toBeLessThanOrEqual(1);
+    expect(result.intent).toBeTruthy();
+    expect(result.reason).toBeTruthy();
   }, 15000);
 });
+
