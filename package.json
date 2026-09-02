@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "db:migrate": "node database/migrate.js",
-    "test": "vitest"
+    "test": "vitest run tests/emailAgentService.test.js tests/llmAdapter.test.js tests/classificationService.test.js tests/decisionService.test.js",
+    "test:live": "vitest run tests/llmClassification.test.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "googleapis": "^178.0.0",
     "morgan": "^1.12.0",
     "pg": "^8.23.0",
     "zod": "^4.5.4"
