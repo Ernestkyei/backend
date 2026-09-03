@@ -1,27 +1,148 @@
-import { saveIncomingEmail } from "../services/emailService.js";
+
+import {
+  getInboxMessages,
+  getEmailDetails
+} from "../services/gmailService.js";
+
+import {
+  saveIncomingEmail
+} from "../services/emailService.js";
+
 
 export const receiveEmail = async (req, res) => {
+
   try {
-    const email = await saveIncomingEmail({
-      messageId: req.body.messageId,
-      senderEmail: req.body.senderEmail,
-      senderName: req.body.senderName,
-      subject: req.body.subject,
-      body: req.body.body,
-      receivedAt: req.body.receivedAt
-    });
+
+    const messages =
+      await getInboxMessages();
+
+    const savedEmails = [];
+
+    let skippedCount = 0;
+
+
+    for (const message of messages) {
+
+      const email =
+        await getEmailDetails(message.id);
+
+
+      const from =
+        email.from || "";
+
+
+      const match =
+        from.match(/^(.*?)\s*<(.+)>$/);
+
+
+      let senderName = "";
+
+      let senderEmail = "";
+
+
+      if (match) {
+
+        senderName =
+          match[1].trim();
+
+        senderEmail =
+          match[2].trim();
+
+      } else {
+
+        senderEmail =
+          from.trim();
+
+      }
+
+
+      const savedEmail =
+        await saveIncomingEmail({
+
+          messageId:
+            email.id,
+
+          threadId:
+            email.threadId,
+
+          senderEmail,
+
+          senderName,
+
+          subject:
+            email.subject,
+
+          body:
+            email.body,
+
+          receivedAt:
+            new Date(
+              email.date.replace(
+                " (UTC)",
+                ""
+              )
+            )
+
+        });
+
+
+      if (savedEmail) {
+
+        savedEmails.push(
+          savedEmail
+        );
+
+      } else {
+
+        skippedCount++;
+
+      }
+
+    }
+
 
     res.status(201).json({
+
       success: true,
-      message: "Email saved successfully",
-      data: email
+
+      message:
+        "Gmail emails processed successfully",
+
+      total:
+        messages.length,
+
+      savedCount:
+        savedEmails.length,
+
+      skippedCount,
+
+      data:
+        savedEmails
+
     });
+
+
   } catch (error) {
-    console.error("Error saving email:", error.message);
+
+    console.error(
+      "Error saving Gmail emails:",
+      error.message
+    );
+
 
     res.status(500).json({
+
       success: false,
-      message: "Failed to save email"
+
+      message:
+        "Failed to save Gmail emails",
+
+      error:
+        error.message
+
     });
+
   }
+
 };
+

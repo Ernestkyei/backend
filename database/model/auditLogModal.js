@@ -5,28 +5,44 @@ export const createAuditLog = async ({
   event,
   details
 }) => {
+
   const query = `
     INSERT INTO audit_logs (
       email_id,
       event,
       details
     )
-    VALUES ($1, $2, $3)
+    VALUES ($1, $2, $3::jsonb)
     RETURNING *;
   `;
+
+  let jsonDetails;
+
+  if (typeof details === "string") {
+    jsonDetails = JSON.stringify({
+      message: details
+    });
+  } else {
+    jsonDetails = JSON.stringify(details);
+  }
 
   const values = [
     emailId,
     event,
-    details
+    jsonDetails
   ];
 
-  const { rows } = await pool.query(query, values);
+  const { rows } = await pool.query(
+    query,
+    values
+  );
 
   return rows[0];
 };
 
+
 export const getAuditLogsByEmailId = async (emailId) => {
+
   const query = `
     SELECT *
     FROM audit_logs
@@ -34,7 +50,10 @@ export const getAuditLogsByEmailId = async (emailId) => {
     ORDER BY created_at DESC;
   `;
 
-  const { rows } = await pool.query(query, [emailId]);
+  const { rows } = await pool.query(
+    query,
+    [emailId]
+  );
 
   return rows;
 };

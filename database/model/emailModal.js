@@ -8,6 +8,7 @@ export const createEmail = async ({
   body,
   receivedAt
 }) => {
+
   const query = `
     INSERT INTO emails (
       message_id,
@@ -18,6 +19,7 @@ export const createEmail = async ({
       received_at
     )
     VALUES ($1, $2, $3, $4, $5, $6)
+    ON CONFLICT (message_id) DO NOTHING
     RETURNING *;
   `;
 
@@ -32,5 +34,20 @@ export const createEmail = async ({
 
   const { rows } = await pool.query(query, values);
 
-  return rows[0];
+  return rows[0] || null;
+};
+
+
+export const getEmails = async () => {
+
+  const query = `
+    SELECT *
+    FROM emails
+    ORDER BY received_at DESC
+    LIMIT 10;
+  `;
+
+  const { rows } = await pool.query(query);
+
+  return rows;
 };
