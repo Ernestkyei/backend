@@ -1,7 +1,11 @@
 import express from "express";
+
 import oauth2Client from "../adapters/gmail/gmailAuth.js";
+import { adminLogin } from "../controllers/authController.js";
 
 const router = express.Router();
+
+router.post("/admin/login", adminLogin);
 
 router.get("/google", (req, res) => {
   const authUrl = oauth2Client.generateAuthUrl({
@@ -29,6 +33,7 @@ router.get("/google/callback", async (req, res) => {
       success: true,
       message: "Google Gmail authorization successful"
     });
+
   } catch (error) {
     console.error("Google OAuth failed:", error.message);
 
