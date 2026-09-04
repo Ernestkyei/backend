@@ -2,6 +2,7 @@ import express from "express";
 
 import oauth2Client from "../adapters/gmail/gmailAuth.js";
 import { adminLogin } from "../controllers/authController.js";
+import pool from "../database/database.js";
 
 const router = express.Router();
 
