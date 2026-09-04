@@ -1,12 +1,10 @@
 import pool from "../database.js";
 
-
 export const createResponse = async ({
   emailId,
   body,
   status = "PENDING"
 }) => {
-
   const query = `
     INSERT INTO responses (
       email_id,
@@ -31,11 +29,9 @@ export const createResponse = async ({
   return rows[0];
 };
 
-
 export const getResponseByEmailId = async (
   emailId
 ) => {
-
   const query = `
     SELECT *
     FROM responses
@@ -52,24 +48,20 @@ export const getResponseByEmailId = async (
   return rows[0];
 };
 
-
 export const updateResponseStatus = async (
   responseId,
   status
 ) => {
-
   const query = `
     UPDATE responses
-    SET status = $1::varchar,
-
-        sent_at = CASE
-          WHEN $1::varchar = 'SENT'
-          THEN CURRENT_TIMESTAMP
-          ELSE sent_at
-        END
-
+    SET
+      status = $1::varchar,
+      sent_at = CASE
+        WHEN $1::varchar = 'SENT'
+        THEN CURRENT_TIMESTAMP
+        ELSE sent_at
+      END
     WHERE id = $2
-
     RETURNING *;
   `;
 
@@ -85,3 +77,4 @@ export const updateResponseStatus = async (
 
   return rows[0];
 };
+

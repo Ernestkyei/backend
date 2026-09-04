@@ -1,7 +1,8 @@
 import express from "express";
 
 import {
-  receiveEmail
+  receiveEmail,
+  getAllStoredEmails
 } from "../controllers/emailController.js";
 
 import {
@@ -19,17 +20,27 @@ import {
   getGroqModels
 } from "../adapters/llm/llmAdapter.js";
 
-
 const router = express.Router();
 
+// ==========================================
+// GET STORED EMAILS
+// GET /api/emails
+// ==========================================
+
+router.get(
+  "/",
+  getAllStoredEmails
+);
 
 // ==========================================
 // RECEIVE / SAVE GMAIL EMAILS
 // POST /api/emails
 // ==========================================
 
-router.post("/", receiveEmail);
-
+router.post(
+  "/",
+  receiveEmail
+);
 
 // ==========================================
 // CLASSIFY STORED EMAIL
@@ -41,7 +52,6 @@ router.post(
   classifyStoredEmails
 );
 
-
 // ==========================================
 // TEST GMAIL CONNECTION
 // GET /api/emails/gmail-test
@@ -50,47 +60,32 @@ router.post(
 router.get(
   "/gmail-test",
   async (req, res) => {
-
     try {
-
       const messages =
         await getInboxMessages();
 
       res.status(200).json({
-
         success: true,
-
-        count:
-          messages.length,
-
+        count: messages.length,
         messages
-
       });
 
     } catch (error) {
-
       console.error(
         "Gmail read failed:",
         error.message
       );
 
       res.status(500).json({
-
         success: false,
-
         message:
           "Failed to read Gmail",
-
         error:
           error.message
-
       });
-
     }
-
   }
 );
-
 
 // ==========================================
 // GET GROQ MODELS
@@ -100,9 +95,7 @@ router.get(
 router.get(
   "/groq-models",
   async (req, res) => {
-
     try {
-
       console.log(
         "Testing Groq models endpoint..."
       );
@@ -111,52 +104,31 @@ router.get(
         await getGroqModels();
 
       res.status(200).json({
-
         success: true,
-
-        count:
-          models.length,
-
-        models:
-          models.map(model => ({
-
-            id:
-              model.id,
-
-            active:
-              model.active,
-
-            ownedBy:
-              model.owned_by
-
-          }))
-
+        count: models.length,
+        models: models.map(model => ({
+          id: model.id,
+          active: model.active,
+          ownedBy: model.owned_by
+        }))
       });
 
     } catch (error) {
-
       console.error(
         "Groq models failed:",
         error.message
       );
 
       res.status(500).json({
-
         success: false,
-
         message:
           "Failed to get Groq models",
-
         error:
           error.message
-
       });
-
     }
-
   }
 );
-
 
 // ==========================================
 // TEST GROQ CONNECTION
@@ -166,9 +138,7 @@ router.get(
 router.get(
   "/groq-test",
   async (req, res) => {
-
     try {
-
       console.log(
         "Testing Groq connection..."
       );
@@ -177,41 +147,27 @@ router.get(
         await testGroqConnection();
 
       res.status(200).json({
-
         success: true,
-
-        model:
-          result.model,
-
-        message:
-          result.message
-
+        model: result.model,
+        message: result.message
       });
 
     } catch (error) {
-
       console.error(
         "Groq test failed:",
         error.message
       );
 
       res.status(500).json({
-
         success: false,
-
         message:
           "Groq connection failed",
-
         error:
           error.message
-
       });
-
     }
-
   }
 );
-
 
 // ==========================================
 // GET GMAIL MESSAGE
@@ -221,46 +177,33 @@ router.get(
 router.get(
   "/gmail-message-test/:id",
   async (req, res) => {
-
     try {
-
       const message =
         await getMessageById(
           req.params.id
         );
 
       res.status(200).json({
-
         success: true,
-
         message
-
       });
 
     } catch (error) {
-
       console.error(
         "Gmail message read failed:",
         error.message
       );
 
       res.status(500).json({
-
         success: false,
-
         message:
           "Failed to read Gmail message",
-
         error:
           error.message
-
       });
-
     }
-
   }
 );
-
 
 // ==========================================
 // GET EMAIL DETAILS
@@ -270,45 +213,33 @@ router.get(
 router.get(
   "/gmail-email-details/:id",
   async (req, res) => {
-
     try {
-
       const email =
         await getEmailDetails(
           req.params.id
         );
 
       res.status(200).json({
-
         success: true,
-
         email
-
       });
 
     } catch (error) {
-
       console.error(
         "Email details read failed:",
         error.message
       );
 
       res.status(500).json({
-
         success: false,
-
         message:
           "Failed to read email details",
-
         error:
           error.message
-
       });
-
     }
-
   }
 );
 
-
 export default router;
+

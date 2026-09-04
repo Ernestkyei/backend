@@ -41,9 +41,59 @@ export const createEmail = async ({
 export const getEmails = async () => {
 
   const query = `
-    SELECT *
-    FROM emails
-    ORDER BY received_at DESC
+    SELECT
+      e.*,
+
+      c.classification,
+      c.confidence,
+      c.intent,
+      c.reason AS classification_reason,
+
+      d.decision,
+      d.reason AS decision_reason,
+
+      r.body AS response_body,
+      r.status AS response_status,
+      r.sent_at AS response_sent_at,
+      r.created_at AS response_created_at
+
+    FROM emails e
+
+    LEFT JOIN LATERAL (
+      SELECT
+        classification,
+        confidence,
+        intent,
+        reason
+      FROM classifications
+      WHERE email_id = e.id
+      ORDER BY created_at DESC
+      LIMIT 1
+    ) c ON true
+
+    LEFT JOIN LATERAL (
+      SELECT
+        decision,
+        reason
+      FROM decisions
+      WHERE email_id = e.id
+      ORDER BY created_at DESC
+      LIMIT 1
+    ) d ON true
+
+    LEFT JOIN LATERAL (
+      SELECT
+        body,
+        status,
+        sent_at,
+        created_at
+      FROM responses
+      WHERE email_id = e.id
+      ORDER BY created_at DESC
+      LIMIT 1
+    ) r ON true
+
+    ORDER BY e.received_at DESC
     LIMIT 10;
   `;
 
@@ -51,3 +101,4 @@ export const getEmails = async () => {
 
   return rows;
 };
+

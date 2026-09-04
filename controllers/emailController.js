@@ -1,11 +1,11 @@
-
 import {
   getInboxMessages,
   getEmailDetails
 } from "../services/gmailService.js";
 
 import {
-  saveIncomingEmail
+  saveIncomingEmail,
+  getStoredEmails
 } from "../services/emailService.js";
 
 
@@ -17,7 +17,6 @@ export const receiveEmail = async (req, res) => {
       await getInboxMessages();
 
     const savedEmails = [];
-
     let skippedCount = 0;
 
 
@@ -36,7 +35,6 @@ export const receiveEmail = async (req, res) => {
 
 
       let senderName = "";
-
       let senderEmail = "";
 
 
@@ -146,3 +144,51 @@ export const receiveEmail = async (req, res) => {
 
 };
 
+
+// ========================================
+// GET STORED EMAILS
+// ========================================
+
+export const getAllStoredEmails = async (req, res) => {
+
+  try {
+
+    const emails =
+      await getStoredEmails();
+
+
+    res.status(200).json({
+
+      success: true,
+
+      count:
+        emails.length,
+
+      data:
+        emails
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Error getting stored emails:",
+      error.message
+    );
+
+
+    res.status(500).json({
+
+      success: false,
+
+      message:
+        "Failed to get stored emails",
+
+      error:
+        error.message
+
+    });
+
+  }
+
+};

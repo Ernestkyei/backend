@@ -43,17 +43,38 @@ export const getReviewCaseByEmailId = async (emailId) => {
   return rows[0];
 };
 
+export const getAllReviewCases = async () => {
+  const query = `
+    SELECT
+      rc.*,
+      e.sender_email,
+      e.sender_name,
+      e.subject,
+      e.body,
+      e.received_at
+    FROM review_cases rc
+    JOIN emails e
+      ON rc.email_id = e.id
+    ORDER BY rc.created_at DESC;
+  `;
+
+  const { rows } = await pool.query(query);
+
+  return rows;
+};
+
 export const updateReviewCaseStatus = async ({
   reviewCaseId,
   status
 }) => {
   const query = `
     UPDATE review_cases
-    SET status = $1,
-        reviewed_at = CASE
-          WHEN $1 = 'RESOLVED' THEN CURRENT_TIMESTAMP
-          ELSE reviewed_at
-        END
+    SET
+      status = $1,
+      reviewed_at = CASE
+        WHEN $1 = 'RESOLVED' THEN CURRENT_TIMESTAMP
+        ELSE reviewed_at
+      END
     WHERE id = $2
     RETURNING *;
   `;
