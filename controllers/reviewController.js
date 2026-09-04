@@ -1,6 +1,7 @@
 import {
   getReviews,
   getReviewByEmailId,
+  getReviewById,
   updateReview
 } from "../services/reviewService.js";
 
@@ -17,7 +18,7 @@ export const getAllReviews = async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: "Failed to fetch reviews"
+      message: "Failed to fetch review cases"
     });
   }
 };
@@ -45,6 +46,33 @@ export const getReview = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch review"
+    });
+  }
+};
+
+export const getReviewDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const review = await getReviewById(id);
+
+    if (!review) {
+      return res.status(404).json({
+        success: false,
+        message: "Review case not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      review
+    });
+  } catch (error) {
+    console.error("Error fetching review details:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch review details"
     });
   }
 };
@@ -80,7 +108,7 @@ export const updateReviewStatus = async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: "Failed to update review"
+      message: "Failed to update review status"
     });
   }
 };

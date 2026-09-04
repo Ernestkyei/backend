@@ -8,7 +8,6 @@ export const createEmail = async ({
   body,
   receivedAt
 }) => {
-
   const query = `
     INSERT INTO emails (
       message_id,
@@ -37,9 +36,7 @@ export const createEmail = async ({
   return rows[0] || null;
 };
 
-
 export const getEmails = async () => {
-
   const query = `
     SELECT
       e.*,
@@ -101,4 +98,3 @@ export const getEmails = async () => {
 
   return rows;
 };
-

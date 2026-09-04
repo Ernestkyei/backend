@@ -51,16 +51,49 @@ export const getAllReviewCases = async () => {
       e.sender_name,
       e.subject,
       e.body,
-      e.received_at
+      e.received_at,
+      c.classification,
+      c.confidence,
+      c.intent,
+      c.reason AS classification_reason
     FROM review_cases rc
     JOIN emails e
       ON rc.email_id = e.id
+    LEFT JOIN classifications c
+      ON c.email_id = e.id
     ORDER BY rc.created_at DESC;
   `;
 
   const { rows } = await pool.query(query);
 
   return rows;
+};
+
+export const getReviewCaseById = async (reviewCaseId) => {
+  const query = `
+    SELECT
+      rc.*,
+      e.sender_email,
+      e.sender_name,
+      e.subject,
+      e.body,
+      e.received_at,
+      c.classification,
+      c.confidence,
+      c.intent,
+      c.reason AS classification_reason
+    FROM review_cases rc
+    JOIN emails e
+      ON rc.email_id = e.id
+    LEFT JOIN classifications c
+      ON c.email_id = e.id
+    WHERE rc.id = $1
+    LIMIT 1;
+  `;
+
+  const { rows } = await pool.query(query, [reviewCaseId]);
+
+  return rows[0];
 };
 
 export const updateReviewCaseStatus = async ({
@@ -70,9 +103,10 @@ export const updateReviewCaseStatus = async ({
   const query = `
     UPDATE review_cases
     SET
-      status = $1,
+      status = $1::varchar,
       reviewed_at = CASE
-        WHEN $1 = 'RESOLVED' THEN CURRENT_TIMESTAMP
+        WHEN $1::varchar = 'RESOLVED'
+        THEN CURRENT_TIMESTAMP
         ELSE reviewed_at
       END
     WHERE id = $2
@@ -88,3 +122,4 @@ export const updateReviewCaseStatus = async ({
 
   return rows[0];
 };
+
