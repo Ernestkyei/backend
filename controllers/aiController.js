@@ -1,37 +1,15 @@
 import { getStoredEmails } from "../services/emailService.js";
-
-import {
-  classifyWithGroq
-} from "../adapters/llm/llmAdapter.js";
-
-import {
-  generateEmailResponse
-} from "../services/responseService.js";
-
-import {
-  createClassification
-} from "../database/model/classificationModal.js";
-
-import {
-  createDecision
-} from "../database/model/decisionModal.js";
-
+import { classifyWithGroq } from "../adapters/llm/llmAdapter.js";
+import { generateEmailResponse } from "../services/responseService.js";
+import { createClassification } from "../database/model/classificationModal.js";
+import { createDecision } from "../database/model/decisionModal.js";
 import {
   createResponse,
-  updateResponseStatus
+  updateResponseStatus,
 } from "../database/model/responseModal.js";
-
-import {
-  sendGmailMessage
-} from "../services/gmailService.js";
-
-import {
-  createReviewCase
-} from "../database/model/reviewCaseModal.js";
-
-import {
-  createAuditLog
-} from "../database/model/auditLogModal.js";
+import { sendGmailMessage } from "../services/gmailService.js";
+import { createReviewCase } from "../database/model/reviewCaseModal.js";
+import { createAuditLog } from "../database/model/auditLogModal.js";
 
 
 // ========================================
@@ -44,7 +22,6 @@ export const classifyStoredEmails = async (req, res) => {
 
     const emails =
       await getStoredEmails();
-
 
     if (!emails.length) {
 

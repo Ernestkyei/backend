@@ -3,11 +3,10 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-3.6-flash"
+  model: "gemini-3.6-flash",
 });
 
 export const classifyEmail = async ({ subject, body }) => {
-
   const prompt = `
 You are an email classification assistant.
 
@@ -32,7 +31,6 @@ Return ONLY valid JSON in this exact format:
 `;
 
   const result = await model.generateContent(prompt);
-
   const response = result.response.text();
 
   const cleanedResponse = response
